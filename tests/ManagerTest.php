@@ -46,7 +46,9 @@ class ManagerTest extends TestCase
 
         $component->add('A', $node);
 
-        $component->execute('A');
+        $result = $component->execute('A');
+
+        $this->assertSame($component, $result);
     }
 
     public function testBefore()
@@ -105,5 +107,62 @@ class ManagerTest extends TestCase
         $component->execute('A');
 
         $this->assertEquals('BA', $handler->content);
+    }
+
+    public function testMultipleNodes()
+    {
+        $component = $this->buildManager();
+        $nodeA     = $this->getMock('PhactTest\NodeSimple');
+        $nodeB     = $this->getMock('PhactTest\NodeSimple');
+        $nodeC     = $this->getMock('PhactTest\NodeSimple');
+        $nodeD     = $this->getMock('PhactTest\NodeSimple');
+
+        $handler = new StdClass();
+
+        $nodeA->method('onExecute')
+            ->will($this->returnCallback(function ($event, $node) use ($handler) {
+                $handler->content = $handler->content . 'A';
+            }));
+        $nodeB->method('onBeforeExecute')
+            ->will($this->returnCallback(function ($event, $node) use ($handler) {
+                $handler->content = 'B';
+            }));
+        $nodeC->method('onAfterExecute')
+            ->will($this->returnCallback(function ($event, $node) use ($handler) {
+                $handler->content = $handler->content . 'C';
+            }));
+
+        $component
+            ->add('A', $nodeA)
+            ->add('B', $nodeB)
+            ->add('C', $nodeC);
+
+        $component
+            ->execute('A')
+            ->execute('A');
+
+        $this->assertEquals('BAC', $handler->content);
+    }
+
+    public function testUnknownIdentifier()
+    {
+        $this->setExpectedException('Phact\Exception');
+
+        $component = $this->buildManager();
+
+        $component->execute('A');
+    }
+
+    public function testDuplicateIdentifier()
+    {
+        $this->setExpectedException('Phact\Exception');
+
+        $component = $this->buildManager();
+        $nodeA     = $this->buildNode();
+        $nodeB     = $this->buildNode();
+
+        $component
+            ->add('A', $nodeA)
+            ->add('A', $nodeB);
     }
 }

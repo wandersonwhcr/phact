@@ -52,9 +52,38 @@ class Manager implements EventsAwareInterface
      */
     public function add($identifier, NodeInterface $node)
     {
+        if ($this->has($identifier)) {
+            throw new Exception("Duplicated Node '$identifier'");
+        }
         $this->nodes[$identifier] = $node;
         $this->getEventsManager()->attach('node', $node);
         return $this;
+    }
+
+    /**
+     * Manager contains Node?
+     *
+     * @param  string $identifier
+     * @return bool
+     */
+    public function has($identifier)
+    {
+        return isset($this->nodes[$identifier]);
+    }
+
+    /**
+     * Capture Node by Identifier
+     *
+     * @param  string        $identifier
+     * @return NodeInterface
+     * @throws Exception     Unknown Node
+     */
+    public function get($identifier)
+    {
+        if (!$this->has($identifier)) {
+            throw new Exception("Unknown Node '$identifier'");
+        }
+        return $this->nodes[$identifier];
     }
 
     /**
@@ -73,15 +102,15 @@ class Manager implements EventsAwareInterface
      * @param  string  $identifier Identifier
      * @return Manager Fluent Interface
      */
-    public function execute($name)
+    public function execute($identifier)
     {
-        $node = $this->nodes[$name];
+        $node = $this->get($identifier);
 
         $eventsManager = $this->getEventsManager();
 
-        $eventsManager->fire('node:onBeforeExecute', $node);
-        $eventsManager->fire('node:onExecute', $node);
-        $eventsManager->fire('node:onAfterExecute', $node);
+        $eventsManager->fire('node:onBeforeExecute', $node, $identifier);
+        $eventsManager->fire('node:onExecute', $node, $identifier);
+        $eventsManager->fire('node:onAfterExecute', $node, $identifier);
 
         return $this;
     }
