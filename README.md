@@ -38,6 +38,18 @@ $manager = (new Manager())
 $manager->execute('A'); // outputs "B before A! A!"
 ```
 
+## Composer
+
+You can install ```Phact``` inside your project with Composer.
+
+```json
+{
+    "require": {
+        "wandersonwhcr/phact": "1.*"
+    }
+}
+```
+
 ## Usage
 
 You can implement three methods using ```NodeInterface```:
