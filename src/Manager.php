@@ -40,6 +40,9 @@ class Manager implements EventsAwareInterface
      */
     public function getEventsManager()
     {
+        if (!$this->eventsManager) {
+            throw new Exception('Unknown Events Manager');
+        }
         return $this->eventsManager;
     }
 

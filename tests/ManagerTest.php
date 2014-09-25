@@ -165,4 +165,14 @@ class ManagerTest extends TestCase
             ->add('A', $nodeA)
             ->add('A', $nodeB);
     }
+
+    public function testUnknownEventsManager()
+    {
+        $this->setExpectedException('Phact\Exception');
+
+        $component = new Manager();
+        $node      = $this->buildNode();
+
+        $component->add('identifier', $node);
+    }
 }
