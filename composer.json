@@ -5,6 +5,9 @@
     "autoload": {
         "psr-4": {"Phact\\": "src"}
     },
+    "autoload-dev": {
+        "psr-4": {"PhactTest\\": "tests"}
+    },
     "require": {
         "ext-phalcon": "*"
     }

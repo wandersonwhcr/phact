@@ -4,6 +4,7 @@ namespace PhactTest;
 use PHPUnit_Framework_TestCase as TestCase;
 use Phact\Manager;
 use Phalcon\Events\Manager as EventsManager;
+use StdClass;
 
 class ManagerTest extends TestCase
 {
@@ -16,7 +17,7 @@ class ManagerTest extends TestCase
 
     protected function buildNode()
     {
-        return $this->getMock('Phact\NodeInterface');
+        return new NodeSimple();
     }
 
     public function testConstructor()
@@ -46,5 +47,63 @@ class ManagerTest extends TestCase
         $component->add('A', $node);
 
         $component->execute('A');
+    }
+
+    public function testBefore()
+    {
+        $component = $this->buildManager();
+        $nodeA     = $this->getMock('PhactTest\NodeSimple');
+        $nodeB     = $this->getMock('PhactTest\NodeSimple');
+
+        $handler = new StdClass();
+        $handler->content = '';
+
+        $nodeA->expects($this->atLeastOnce())
+            ->method('onExecute')
+            ->will($this->returnCallback(function () use ($handler) {
+                $handler->content = $handler->content . 'A';
+            }));
+        $nodeB->expects($this->atLeastOnce())
+            ->method('onBeforeExecute')
+            ->will($this->returnCallback(function () use ($handler) {
+                $handler->content = $handler->content . 'B';
+            }));
+
+        $component
+            ->add('A', $nodeA)
+            ->add('B', $nodeB);
+
+        $component->execute('A');
+
+        $this->assertEquals('BA', $handler->content);
+    }
+
+    public function testAfter()
+    {
+        $component = $this->buildManager();
+        $nodeA     = $this->getMock('PhactTest\NodeSimple');
+        $nodeB     = $this->getMock('PhactTest\NodeSimple');
+
+        $handler = new StdClass();
+        $handler->content = '';
+
+        $nodeA->expects($this->atLeastOnce())
+            ->method('onAfterExecute')
+            ->will($this->returnCallback(function () use ($handler) {
+                $handler->content = $handler->content . 'A';
+            }));
+        $nodeB->expects($this->atLeastOnce())
+            ->method('onExecute')
+            ->will($this->returnCallback(function () use ($handler) {
+                $handler->content = $handler->content . 'B';
+            }));
+
+        $component
+            ->add('A', $nodeA)
+            ->add('B', $nodeB);
+
+        $component->execute('A');
+
+        $this->assertEquals('BA', $handler->content);
     }
 }

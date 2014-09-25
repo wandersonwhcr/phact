@@ -53,6 +53,7 @@ class Manager implements EventsAwareInterface
     public function add($identifier, NodeInterface $node)
     {
         $this->nodes[$identifier] = $node;
+        $this->getEventsManager()->attach('node', $node);
         return $this;
     }
 
