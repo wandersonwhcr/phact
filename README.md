@@ -37,3 +37,29 @@ $manager = (new Manager())
 
 $manager->execute('A'); // outputs "B before A! A!"
 ```
+
+## Usage
+
+You can implement three methods using ```NodeInterface```:
+
+```php
+use Phact\NodeInterface;
+use Phalcon\Events\Event;
+
+class Node implements NodeInterface
+{
+    public function onBeforeExecute(Event $event, NodeInterface $node)
+    {
+    }
+    
+    public function onExecute(Event $event, NodeInterface $node)
+    {
+    }
+    
+    public function onAfterExecute(Event $event, NodeInterface $node)
+    {
+    }
+}
+```
+
+With these events, you can order your node executions and create awesome events propagation like installers or database structure changes.
