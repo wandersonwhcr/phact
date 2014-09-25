@@ -1,0 +1,11 @@
+{
+    "name": "wandersonwhcr/phact",
+    "description": "A Simple Event Propagation with Phalcon Framework",
+    "license": "BSD-3-Clause",
+    "autoload": {
+        "psr-4": {"Phact\\": "src"}
+    },
+    "require": {
+        "ext-phalcon": "*"
+    }
+}
