@@ -65,4 +65,23 @@ class Manager implements EventsAwareInterface
     {
         return $this->nodes;
     }
+
+    /**
+     * Execute
+     *
+     * @param  string  $identifier Identifier
+     * @return Manager Fluent Interface
+     */
+    public function execute($name)
+    {
+        $node = $this->nodes[$name];
+
+        $eventsManager = $this->getEventsManager();
+
+        $eventsManager->fire('node:onBeforeExecute', $node);
+        $eventsManager->fire('node:onExecute', $node);
+        $eventsManager->fire('node:onAfterExecute', $node);
+
+        return $this;
+    }
 }

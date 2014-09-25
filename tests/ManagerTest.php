@@ -37,4 +37,14 @@ class ManagerTest extends TestCase
         $result = $component->getNodes();
         $this->assertEquals(array('identifier' => $node), $result);
     }
+
+    public function testExecute()
+    {
+        $component = $this->buildManager();
+        $node      = $this->buildNode();
+
+        $component->add('A', $node);
+
+        $component->execute('A');
+    }
 }
